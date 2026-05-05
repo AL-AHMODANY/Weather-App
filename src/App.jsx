@@ -91,7 +91,7 @@ function App() {
         {/* Error message */}
         {error && (
           <div className="mb-4">
-            <ErrorMessage message={error} />
+            <ErrorMessage message={error} isDark={isDark} />
           </div>
         )}
 
