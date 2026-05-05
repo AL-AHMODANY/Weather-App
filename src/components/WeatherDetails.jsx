@@ -3,21 +3,26 @@ import { WiHumidity, WiStrongWind, WiBarometer, WiSunrise, WiSunset } from "reac
 import { MdVisibility } from "react-icons/md";
 import { formatWindSpeed, formatVisibility, formatTime, getWindDirection } from "../utils/weatherHelpers";
 
-const DetailCard = ({ icon, label, value, sub, delay = 0 }) => (
+const getWindArrow = (degrees) => {
+  const arrows = ["↑", "↗", "→", "↘", "↓", "↙", "←", "↖"];
+  return arrows[Math.round(degrees / 45) % 8];
+};
+
+const DetailCard = ({ icon, label, value, sub, delay = 0, isDark = true }) => (
   <div
     className="glass-card rounded-2xl p-4 flex flex-col gap-2 animate-slide-up hover:scale-[1.02] transition-transform duration-300 cursor-default"
     style={{ animationDelay: `${delay}ms` }}
   >
-    <div className="flex items-center gap-2 text-white/50">
-      <span className="text-sky-400">{icon}</span>
+    <div className={`flex items-center gap-2 ${isDark ? "text-white/50" : "text-slate-500"}`}>
+      <span className="text-sky-500">{icon}</span>
       <span className="font-dm text-xs uppercase tracking-wider">{label}</span>
     </div>
-    <div className="font-outfit font-bold text-xl text-white">{value}</div>
-    {sub && <div className="font-dm text-xs text-white/40">{sub}</div>}
+    <div className={`font-outfit font-bold text-xl ${isDark ? "text-white" : "text-slate-800"}`}>{value}</div>
+    {sub && <div className={`font-dm text-xs ${isDark ? "text-white/40" : "text-slate-400"}`}>{sub}</div>}
   </div>
 );
 
-const WeatherDetails = ({ data, unit }) => {
+const WeatherDetails = ({ data, unit, isDark = true }) => {
   const { main, wind, visibility, sys, timezone } = data;
 
   const windDir = getWindDirection(wind.deg);
@@ -67,22 +72,16 @@ const WeatherDetails = ({ data, unit }) => {
 
   return (
     <div className="animate-slide-up-delay">
-      <h2 className="font-outfit font-semibold text-white/60 text-sm uppercase tracking-widest mb-3 px-1">
+      <h2 className={`font-outfit font-semibold text-sm uppercase tracking-widest mb-3 px-1 ${isDark ? "text-white/60" : "text-slate-500"}`}>
         Weather Details
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {details.map((d, i) => (
-          <DetailCard key={d.label} {...d} delay={i * 60} />
+          <DetailCard key={d.label} {...d} delay={i * 60} isDark={isDark} />
         ))}
       </div>
     </div>
   );
-};
-
-// Wind direction arrow
-const getWindArrow = (degrees) => {
-  const arrows = ["↑", "↗", "→", "↘", "↓", "↙", "←", "↖"];
-  return arrows[Math.round(degrees / 45) % 8];
 };
 
 export default WeatherDetails;

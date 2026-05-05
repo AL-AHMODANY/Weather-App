@@ -2,14 +2,11 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { FiSearch, FiMapPin } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 
-const SearchBar = ({ onSearch, onGeolocate, loading }) => {
+const SearchBar = ({ onSearch, onGeolocate, loading, isDark = true }) => {
   const [query, setQuery] = useState("");
   const inputRef = useRef(null);
 
-  // Auto-focus on mount
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+  useEffect(() => { inputRef.current?.focus(); }, []);
 
   const handleSearch = useCallback(() => {
     const trimmed = query.trim();
@@ -36,17 +33,23 @@ const SearchBar = ({ onSearch, onGeolocate, loading }) => {
     );
   };
 
+  const inputBase = isDark
+    ? "bg-white/10 border-white/15 text-white placeholder-white/40 focus:border-sky-400/60 focus:bg-white/15"
+    : "bg-white/70 border-slate-200 text-slate-800 placeholder-slate-400 focus:border-sky-400 focus:bg-white";
+
+  const btnBase = isDark
+    ? "bg-white/10 hover:bg-white/20 border-white/15 hover:border-sky-400/40 text-white/70 hover:text-sky-300"
+    : "bg-white/70 hover:bg-white border-slate-200 hover:border-sky-400/60 text-slate-600 hover:text-sky-600";
+
   return (
     <div className="w-full max-w-2xl mx-auto animate-fade-in">
       <div className="flex gap-2 items-center">
-        {/* Search input */}
         <div className="relative flex-1">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none">
-            {loading ? (
-              <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-sky-400 animate-spin" />
-            ) : (
-              <FiSearch size={20} />
-            )}
+          <div className={`absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none ${isDark ? "text-white/40" : "text-slate-400"}`}>
+            {loading
+              ? <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-sky-400 animate-spin" />
+              : <FiSearch size={20} />
+            }
           </div>
           <input
             ref={inputRef}
@@ -56,28 +59,24 @@ const SearchBar = ({ onSearch, onGeolocate, loading }) => {
             onKeyDown={handleKeyDown}
             placeholder="Type a city name and press Enter..."
             disabled={loading}
-            className="
-              w-full pl-12 pr-10 py-4
-              bg-white/10 backdrop-blur-md
-              border border-white/15 rounded-2xl
-              text-white placeholder-white/40
-              font-dm text-base
-              focus:outline-none focus:border-sky-400/60 focus:bg-white/15
-              transition-all duration-300
+            className={`
+              w-full pl-12 pr-10 py-4 backdrop-blur-md
+              border rounded-2xl font-dm text-base
+              focus:outline-none transition-all duration-300
               disabled:opacity-60 disabled:cursor-not-allowed
-            "
+              ${inputBase}
+            `}
           />
           {query && (
             <button
               onClick={handleClear}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+              className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors ${isDark ? "text-white/40 hover:text-white/80" : "text-slate-400 hover:text-slate-700"}`}
             >
               <IoClose size={20} />
             </button>
           )}
         </div>
 
-        {/* Search button */}
         <button
           onClick={handleSearch}
           disabled={loading || !query.trim()}
@@ -95,22 +94,18 @@ const SearchBar = ({ onSearch, onGeolocate, loading }) => {
           Search
         </button>
 
-        {/* Geolocation button */}
         <button
           onClick={handleGeolocate}
           disabled={loading}
           title="Use my location"
-          className="
-            px-4 py-4 rounded-2xl
-            bg-white/10 hover:bg-white/20
-            border border-white/15 hover:border-sky-400/40
-            text-white/70 hover:text-sky-300
+          className={`
+            px-4 py-4 rounded-2xl border
             transition-all duration-300
             disabled:opacity-50 disabled:cursor-not-allowed
-            hover:shadow-lg hover:shadow-sky-500/10
-            active:scale-95
+            hover:shadow-lg active:scale-95
             flex items-center gap-2
-          "
+            ${btnBase}
+          `}
         >
           <FiMapPin size={20} />
           <span className="hidden sm:inline text-sm font-dm">My Location</span>
